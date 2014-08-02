@@ -1,5 +1,11 @@
 package csvcradle.model.parser;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+import csvcradle.model.Row;
+import csvcradle.model.Value;
 
 public class CSVParser
 {
@@ -9,6 +15,60 @@ public class CSVParser
 	public CSVParser(CSVLexer lexer)
 	{
 		this.lexer = lexer;
+	}
+
+	//
+	// <<Rows>> ::= { <<Row>> } <End>
+	//
+	public List<Row> parse()
+	{
+		List<Row> rows = new LinkedList<Row>();
+
+		next();
+		while (isText() || isComma())
+		{
+			rows.add(parseRow());
+		}
+		if (!isEnd())
+		{
+			throw new RuntimeException("unexpected token: " + token.text);
+		}
+
+		return rows;
+	}
+
+	//
+	// <<Row>> ::= [ <Text> ] { <Comma> [ <Text> ] } { <NewLine> }
+	//
+	private Row parseRow()
+	{
+		List<Value> values = new ArrayList<Value>();
+
+		String value = "";
+		Location location = token.location;
+		if (isText())
+		{
+			value = token.text;
+			next();
+		}
+		values.add(new Value(value, location));
+		while (isComma())
+		{
+			next();
+			value = "";
+			location = token.location;
+			if (isText())
+			{
+				value = token.text;
+				next();
+			}
+			values.add(new Value(value, location));
+		}
+		while (isNewLine())
+		{
+			next();
+		}
+		return new Row(values);
 	}
 
 	private boolean isEnd()
