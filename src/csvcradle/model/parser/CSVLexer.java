@@ -1,6 +1,5 @@
 package csvcradle.model.parser;
 
-
 public class CSVLexer
 {
 	private CharSequence cs;
@@ -9,11 +8,20 @@ public class CSVLexer
 	private int column;
 	private Location curLocation;
 	private LineDelimiter lineDelimiter;
+	private StringBuilder buf = new StringBuilder();
 
 	public CSVLexer(CharSequence cs)
 	{
 		this.cs = cs;
 		reset();
+	}
+
+	public void reset()
+	{
+		p = 0;
+		line = 1;
+		column = 1;
+		lineDelimiter = null;
 	}
 
 	public Token lex()
@@ -25,13 +33,86 @@ public class CSVLexer
 			return createToken(Tag.END, "$END");
 		}
 
-		throw new RuntimeException("!!!");
+		if (peek() == '"')
+		{
+			String text = lexQuoted();
+			return createToken(Tag.TEXT, text);
+		}
+		else if (peek() == ',')
+		{
+			succ();
+			return createToken(Tag.COMMA, ",");
+		}
+		else if (peek() == '\r')
+		{
+			succ();
+			if (peek() == '\n')
+			{
+				succ();
+				setLineDelimiter(LineDelimiter.CRLF);
+				return createToken(Tag.NEWLINE, "CRLF");
+			}
+			setLineDelimiter(LineDelimiter.CR);
+			return createToken(Tag.NEWLINE, "CR");
+		}
+		else if (peek() == '\n')
+		{
+			succ();
+			setLineDelimiter(LineDelimiter.LF);
+			return createToken(Tag.NEWLINE, "LF");
+		}
+		else
+		{
+			String text = lexText();
+			return createToken(Tag.TEXT, text);
+		}
 	}
 
-	public void reset()
+	private String lexText()
 	{
-		p = 0;
-		lineDelimiter = null;
+		buf.setLength(0);
+		do
+		{
+			buf.append(peek());
+			succ();
+		}
+		while (!end() && peek() != ',' && peek() != '\r' && peek() != '\n');
+		return buf.toString();
+	}
+
+	private String lexQuoted()
+	{
+		if (peek() != '"') return "";
+		succ();
+
+		buf.setLength(0);
+		while (!end())
+		{
+			if (peek() == '"')
+			{
+				succ();
+				if (peek() == '"')
+				{
+					succ();
+					buf.append('"');
+				}
+				else
+				{
+					break;
+				}
+			}
+			else
+			{
+				buf.append(peek());
+				succ();
+			}
+		}
+		return buf.toString();
+	}
+
+	private void setLineDelimiter(LineDelimiter lineDelimiter)
+	{
+		this.lineDelimiter = lineDelimiter;
 	}
 
 	private Token createToken(Tag tag, String text)
