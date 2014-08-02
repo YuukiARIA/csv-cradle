@@ -2,6 +2,9 @@ package csvcradle.model;
 
 import java.util.List;
 
+import csvcradle.model.parser.CSVLexer;
+import csvcradle.model.parser.CSVParser;
+
 public class CSV
 {
 	private List<Row> rows;
@@ -29,5 +32,11 @@ public class CSV
 			rowsArray[i] = rows.get(i).toStringArray();
 		}
 		return rowsArray;
+	}
+
+	public static CSV parse(CharSequence sourceText)
+	{
+		CSVParser parser = new CSVParser(new CSVLexer(sourceText));
+		return parser.parse();
 	}
 }
