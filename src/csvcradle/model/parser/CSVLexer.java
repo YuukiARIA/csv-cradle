@@ -129,6 +129,16 @@ public class CSVLexer
 	{
 		if (!end())
 		{
+			char newlineChar = lineDelimiter == LineDelimiter.CR ? '\r' : '\n';
+			if (peek() == newlineChar)
+			{
+				++line;
+				column = 1;
+			}
+			else
+			{
+				++column;
+			}
 			++p;
 		}
 	}
