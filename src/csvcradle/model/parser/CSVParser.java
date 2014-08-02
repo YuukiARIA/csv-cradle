@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import csvcradle.model.CSV;
 import csvcradle.model.Row;
 import csvcradle.model.Value;
 
@@ -18,9 +19,9 @@ public class CSVParser
 	}
 
 	//
-	// <<Rows>> ::= { <<Row>> } <End>
+	// <<CSV>> ::= { <<Row>> } <End>
 	//
-	public List<Row> parse()
+	public CSV parse()
 	{
 		List<Row> rows = new LinkedList<Row>();
 
@@ -34,7 +35,7 @@ public class CSVParser
 			throw new RuntimeException("unexpected token: " + token.text);
 		}
 
-		return rows;
+		return new CSV(rows);
 	}
 
 	//
