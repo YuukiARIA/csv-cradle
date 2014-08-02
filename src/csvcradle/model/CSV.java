@@ -11,6 +11,11 @@ public class CSV
 		this.rows = rows;
 	}
 
+	public int countRows()
+	{
+		return rows.size();
+	}
+
 	public Row getRow(int i)
 	{
 		return rows.get(i);
