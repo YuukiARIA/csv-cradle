@@ -29,4 +29,19 @@ public class DiagnosisMessage
 	{
 		return message;
 	}
+
+	public static DiagnosisMessage newInfo(Location location, String message)
+	{
+		return new DiagnosisMessage(Severity.INFO, location, message);
+	}
+
+	public static DiagnosisMessage newWarning(Location location, String message)
+	{
+		return new DiagnosisMessage(Severity.WARNING, location, message);
+	}
+
+	public static DiagnosisMessage newError(Location location, String message)
+	{
+		return new DiagnosisMessage(Severity.ERROR, location, message);
+	}
 }
