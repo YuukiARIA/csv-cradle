@@ -127,7 +127,7 @@ public class CSVLexer
 		}
 		if (!closed)
 		{
-			diagnoses.add(DiagnosisMessage.newWarning(Location.of(line, column), "二重引用符が閉じられていません。"));
+			diagnoses.add(DiagnosisMessage.newWarning(curLocation, "二重引用符が閉じられていません。"));
 		}
 		return buf.toString();
 	}
