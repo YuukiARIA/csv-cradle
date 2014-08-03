@@ -28,6 +28,11 @@ public class CSVParser
 		return allDiagnoses;
 	}
 
+	public List<String> getLines()
+	{
+		return lexer.getLines();
+	}
+
 	//
 	// <<CSV>> ::= { <<Row>> } <End>
 	//
@@ -110,5 +115,10 @@ public class CSVParser
 	private void next()
 	{
 		token = lexer.lex();
+	}
+
+	public static CSVParser create(CharSequence sourceText)
+	{
+		return new CSVParser(new CSVLexer(sourceText));
 	}
 }

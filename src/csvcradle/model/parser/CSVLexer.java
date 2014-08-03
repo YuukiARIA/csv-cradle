@@ -9,6 +9,8 @@ import csvcradle.validator.DiagnosisMessage;
 public class CSVLexer
 {
 	private CharSequence cs;
+	private StringBuilder lineBuf = new StringBuilder();
+	private List<String> lines = new LinkedList<>();
 	private int p;
 	private int line;
 	private int column;
@@ -29,6 +31,11 @@ public class CSVLexer
 		line = 1;
 		column = 1;
 		lineDelimiter = null;
+	}
+
+	public List<String> getLines()
+	{
+		return Collections.unmodifiableList(lines);
 	}
 
 	public List<DiagnosisMessage> getDiagnoses()
@@ -160,10 +167,13 @@ public class CSVLexer
 			{
 				++line;
 				column = 1;
+				lines.add(lineBuf.toString());
+				lineBuf.setLength(0);
 			}
 			else
 			{
 				++column;
+				lineBuf.append(peek());
 			}
 			++p;
 		}
