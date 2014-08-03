@@ -7,15 +7,25 @@ import java.util.List;
 import csvcradle.model.CSV;
 import csvcradle.model.Row;
 import csvcradle.model.Value;
+import csvcradle.validator.DiagnosisMessage;
 
 public class CSVParser
 {
 	private CSVLexer lexer;
 	private Token token;
+	private List<DiagnosisMessage> diagnoses = new LinkedList<>();
 
 	public CSVParser(CSVLexer lexer)
 	{
 		this.lexer = lexer;
+	}
+
+	public List<DiagnosisMessage> getDiagnoses()
+	{
+		List<DiagnosisMessage> allDiagnoses = new LinkedList<>();
+		allDiagnoses.addAll(lexer.getDiagnoses());
+		allDiagnoses.addAll(diagnoses);
+		return allDiagnoses;
 	}
 
 	//
@@ -32,7 +42,7 @@ public class CSVParser
 		}
 		if (!isEnd())
 		{
-			throw new RuntimeException("unexpected token: " + token.text);
+			diagnoses.add(DiagnosisMessage.newError(token.location, "予期しない入力: " + token.text));
 		}
 
 		return new CSV(rows);
@@ -65,8 +75,13 @@ public class CSVParser
 			}
 			values.add(new Value(value, location));
 		}
+		if (isNewLine())
+		{
+			next();
+		}
 		while (isNewLine())
 		{
+			diagnoses.add(DiagnosisMessage.newWarning(token.location, "空行が無視されました。"));
 			next();
 		}
 		return new Row(values);
