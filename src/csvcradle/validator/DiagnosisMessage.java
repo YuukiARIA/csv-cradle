@@ -30,6 +30,11 @@ public class DiagnosisMessage
 		return message;
 	}
 
+	public String toString()
+	{
+		return "[" + severity + "] " + location + " - " + message;
+	}
+
 	public static DiagnosisMessage newInfo(Location location, String message)
 	{
 		return new DiagnosisMessage(Severity.INFO, location, message);
