@@ -1,9 +1,13 @@
 package csvcradle.validator;
 
+import java.util.Comparator;
+
 import csvcradle.model.parser.Location;
 
 public class DiagnosisMessage
 {
+	private static Comparator<DiagnosisMessage> comparator;
+
 	private Severity severity;
 	private Location location;
 	private String message;
@@ -48,5 +52,21 @@ public class DiagnosisMessage
 	public static DiagnosisMessage newError(Location location, String message)
 	{
 		return new DiagnosisMessage(Severity.ERROR, location, message);
+	}
+
+	public static Comparator<DiagnosisMessage> getComparator()
+	{
+		if (comparator == null)
+		{
+			comparator = new Comparator<DiagnosisMessage>()
+			{
+				@Override
+				public int compare(DiagnosisMessage d1, DiagnosisMessage d2)
+				{
+					return d1.location.compareTo(d2.location);
+				}
+			};
+		}
+		return comparator;
 	}
 }
