@@ -39,14 +39,18 @@ public class CSVValidator
 		{
 			Row row = csv.getRow(i);
 			Location location = row.getValue(0).getLocation();
-			if (row.countValues() < header.countValues())
+			if (row.countValues() != header.countValues())
 			{
-				diagnoses.add(DiagnosisMessage.newWarning(location, "カラム数が少なすぎます。"));
-				valid = false;
-			}
-			else if (row.countValues() > header.countValues())
-			{
-				diagnoses.add(DiagnosisMessage.newWarning(location, "カラム数が多すぎます。"));
+				String msg = "（ヘッダー" + header.countValues() + "列に対して" + row.countValues() + "列）";
+				if (row.countValues() < header.countValues())
+				{
+					msg = "カラム数が少なすぎます。" + msg;
+				}
+				else if (row.countValues() > header.countValues())
+				{
+					msg = "カラム数が多すぎます。" + msg;
+				}
+				diagnoses.add(DiagnosisMessage.newWarning(location, msg));
 				valid = false;
 			}
 		}
@@ -73,7 +77,8 @@ public class CSVValidator
 					String text = value.getText();
 					if (!text.isEmpty())
 					{
-						diagnoses.add(DiagnosisMessage.newWarning(value.getLocation(), "数値であるべき？"));
+						String msg = "数値であるべき？ [" + header.getValueText(c) + "] = [" + text + "]";
+						diagnoses.add(DiagnosisMessage.newWarning(value.getLocation(), msg));
 					}
 				}
 			}
