@@ -141,11 +141,18 @@ public class CSVLexer
 
 	private void setLineDelimiter(LineDelimiter lineDelimiter)
 	{
-		if (this.lineDelimiter != null && this.lineDelimiter != lineDelimiter)
+		if (this.lineDelimiter != lineDelimiter)
 		{
-			diagnoses.add(DiagnosisMessage.newWarning(Location.of(line, column), "改行コード" + this.lineDelimiter + "と" + lineDelimiter + "が混在して用いられています。"));
+			if (this.lineDelimiter == null)
+			{
+				diagnoses.add(DiagnosisMessage.newInfo(Location.of(1, 1), "改行コード " + lineDelimiter));
+			}
+			else
+			{
+				diagnoses.add(DiagnosisMessage.newWarning(Location.of(line, column), "改行コード" + this.lineDelimiter + "と" + lineDelimiter + "が混在して用いられています。"));
+			}
+			this.lineDelimiter = lineDelimiter;
 		}
-		this.lineDelimiter = lineDelimiter;
 	}
 
 	private Token createToken(Tag tag, String text)
