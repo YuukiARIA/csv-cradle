@@ -47,7 +47,7 @@ public class CSVParser
 		}
 		if (!isEnd())
 		{
-			diagnoses.add(DiagnosisMessage.newError(token.location, "予期しない入力: " + token.text));
+			diagnoses.add(DiagnosisMessage.newError(token.startLocation, "予期しない入力: " + token.text));
 		}
 
 		return new CSV(rows);
@@ -61,24 +61,26 @@ public class CSVParser
 		List<Value> values = new ArrayList<Value>();
 
 		String value = "";
-		Location location = token.location;
+		Location startLocation = token.startLocation;
+		Location endLocation = token.endLocation;
 		if (isText())
 		{
 			value = token.text;
 			next();
 		}
-		values.add(new Value(value, location));
+		values.add(new Value(value, startLocation, endLocation));
 		while (isComma())
 		{
 			next();
 			value = "";
-			location = token.location;
+			startLocation = token.startLocation;
+			endLocation = token.endLocation;
 			if (isText())
 			{
 				value = token.text;
 				next();
 			}
-			values.add(new Value(value, location));
+			values.add(new Value(value, startLocation, endLocation));
 		}
 		if (isNewLine())
 		{
@@ -86,7 +88,7 @@ public class CSVParser
 		}
 		while (isNewLine())
 		{
-			diagnoses.add(DiagnosisMessage.newWarning(token.location, "空行が無視されました。"));
+			diagnoses.add(DiagnosisMessage.newWarning(token.startLocation, "空行が無視されました。"));
 			next();
 		}
 		return new Row(values);

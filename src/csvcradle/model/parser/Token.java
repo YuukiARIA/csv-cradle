@@ -4,14 +4,14 @@ public class Token
 {
 	public final Tag tag;
 	public final String text;
-	public final Location location;
+	public final Location startLocation;
 	public final Location endLocation;
 
-	public Token(Tag tag, String text, Location location, Location endLocation)
+	public Token(Tag tag, String text, Location startLocation, Location endLocation)
 	{
 		this.tag = tag;
 		this.text = text;
-		this.location = location;
+		this.startLocation = startLocation;
 		this.endLocation = endLocation;
 	}
 }

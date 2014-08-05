@@ -5,12 +5,14 @@ import csvcradle.model.parser.Location;
 public class Value
 {
 	private String text;
-	private Location location;
+	private Location startLocation;
+	private Location endLocation;
 
-	public Value(String text, Location location)
+	public Value(String text, Location startLocation, Location endLocation)
 	{
 		this.text = text;
-		this.location = location;
+		this.startLocation = startLocation;
+		this.endLocation = endLocation;
 	}
 
 	public String getText()
@@ -20,7 +22,12 @@ public class Value
 
 	public Location getLocation()
 	{
-		return location;
+		return startLocation;
+	}
+
+	public Location getEndLocation()
+	{
+		return endLocation;
 	}
 
 	public String toString()
