@@ -96,7 +96,7 @@ public class CSVLexer
 		{
 			if (peek() == '"')
 			{
-				diagnoses.add(DiagnosisMessage.newWarning(Location.of(line, column), "エスケープされていない二重引用符があります。"));
+				diagnoses.add(DiagnosisMessage.newError(currentLocation(), "エスケープされていない二重引用符があります。"));
 			}
 			buf.append(peek());
 			succ();
@@ -136,7 +136,7 @@ public class CSVLexer
 		}
 		if (!closed)
 		{
-			diagnoses.add(DiagnosisMessage.newWarning(currentLocation(), "二重引用符が閉じられていません。"));
+			diagnoses.add(DiagnosisMessage.newError(startLocation, "二重引用符が閉じられていません。"));
 		}
 		return buf.toString();
 	}
