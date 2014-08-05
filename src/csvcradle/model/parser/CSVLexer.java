@@ -31,6 +31,8 @@ public class CSVLexer
 		line = 1;
 		column = 1;
 		lineDelimiter = null;
+		lineBuf.setLength(0);
+		lines.clear();
 	}
 
 	public List<String> getLines()
@@ -187,7 +189,14 @@ public class CSVLexer
 				++column;
 				lineBuf.append(peek());
 			}
+
 			++p;
+
+			if (end())
+			{
+				lines.add(lineBuf.toString());
+				lineBuf.setLength(0);
+			}
 		}
 	}
 
