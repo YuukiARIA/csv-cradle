@@ -14,7 +14,7 @@ public class CSVLexer
 	private int p;
 	private int line;
 	private int column;
-	private Location curLocation;
+	private Location startLocation;
 	private LineDelimiter lineDelimiter;
 	private StringBuilder buf = new StringBuilder();
 	private List<DiagnosisMessage> diagnoses = new LinkedList<DiagnosisMessage>();
@@ -45,7 +45,7 @@ public class CSVLexer
 
 	public Token lex()
 	{
-		curLocation = Location.of(line, column);
+		startLocation = Location.of(line, column);
 
 		if (end())
 		{
@@ -134,7 +134,7 @@ public class CSVLexer
 		}
 		if (!closed)
 		{
-			diagnoses.add(DiagnosisMessage.newWarning(curLocation, "二重引用符が閉じられていません。"));
+			diagnoses.add(DiagnosisMessage.newWarning(currentLocation(), "二重引用符が閉じられていません。"));
 		}
 		return buf.toString();
 	}
@@ -149,15 +149,20 @@ public class CSVLexer
 			}
 			else
 			{
-				diagnoses.add(DiagnosisMessage.newWarning(Location.of(line, column), "改行コード" + this.lineDelimiter + "と" + lineDelimiter + "が混在して用いられています。"));
+				diagnoses.add(DiagnosisMessage.newWarning(currentLocation(), "改行コード" + this.lineDelimiter + "と" + lineDelimiter + "が混在して用いられています。"));
 			}
 			this.lineDelimiter = lineDelimiter;
 		}
 	}
 
+	private Location currentLocation()
+	{
+		return Location.of(line, column);
+	}
+
 	private Token createToken(Tag tag, String text)
 	{
-		return new Token(tag, text, curLocation);
+		return new Token(tag, text, startLocation, currentLocation());
 	}
 
 	private char peek()
