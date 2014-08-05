@@ -38,7 +38,7 @@ public class CSVValidator
 		for (int i = 1; i < csv.countRows(); i++)
 		{
 			Row row = csv.getRow(i);
-			Location location = row.getValue(0).getLocation();
+			Location location = row.getValue(0).getStartLocation();
 			if (row.countValues() != header.countValues())
 			{
 				String msg = "（ヘッダー" + header.countValues() + "列に対して" + row.countValues() + "列）";
@@ -78,7 +78,7 @@ public class CSVValidator
 					if (!text.isEmpty())
 					{
 						String msg = "数値であるべき？ [" + header.getValueText(c) + "] = [" + text + "]";
-						diagnoses.add(DiagnosisMessage.newWarning(value.getLocation(), msg));
+						diagnoses.add(DiagnosisMessage.newWarning(value.getStartLocation(), msg));
 					}
 				}
 			}

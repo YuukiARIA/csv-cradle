@@ -20,7 +20,7 @@ public class Value
 		return text;
 	}
 
-	public Location getLocation()
+	public Location getStartLocation()
 	{
 		return startLocation;
 	}
