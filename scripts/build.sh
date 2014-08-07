@@ -1,8 +1,9 @@
 #!/bin/sh
 
-SRCDIR=${PWD}/src
-OUTDIR=${PWD}/bin
-PRODUCTDIR=${PWD}/product
+BASEDIR=`dirname $0`/..
+SRCDIR=${BASEDIR}/src
+OUTDIR=${BASEDIR}/bin
+PRODUCTDIR=${BASEDIR}/product
 MAINCLASS=csvcradle.Main
 
 if [ -e ${OUTDIR} ]; then
