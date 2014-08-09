@@ -1,7 +1,10 @@
 package csvcradle.model;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import csvcradle.model.parser.CSVLexer;
 import csvcradle.model.parser.CSVParser;
@@ -40,6 +43,26 @@ public class CSV
 			rowsArray[i] = rows.get(i).toStringArray();
 		}
 		return rowsArray;
+	}
+
+	public List<Map<String, String>> toMapList()
+	{
+		List<Map<String, String>> mapList = new ArrayList<>();
+		if (countRows() > 0)
+		{
+			Row header = getRow(0);
+			for (int i = 1; i < countRows(); i++)
+			{
+				Row row = getRow(i);
+				Map<String, String> map = new HashMap<>();
+				for (int j = 0; j < Math.min(header.countValues(), row.countValues()); j++)
+				{
+					map.put(header.getValueText(j), row.getValueText(j));
+				}
+				mapList.add(map);
+			}
+		}
+		return mapList;
 	}
 
 	public static CSV parse(CharSequence sourceText)
