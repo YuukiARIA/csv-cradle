@@ -22,11 +22,27 @@ public class CSVValidator
 	public static List<DiagnosisMessage> validate(CSV csv)
 	{
 		List<DiagnosisMessage> diagnoses = new LinkedList<>();
+		validateEmptyHeaderColumn(csv, diagnoses);
 		if (validateColumnCounts(csv, diagnoses))
 		{
 			validateSimpleValueTypes(csv, diagnoses);
 		}
 		return diagnoses;
+	}
+
+	private static void validateEmptyHeaderColumn(CSV csv, List<DiagnosisMessage> diagnoses)
+	{
+		if (csv.countRows() == 0) return;
+
+		Row header = csv.getRow(0);
+		for (int i = 0; i < header.countValues(); i++)
+		{
+			Value value = header.getValue(i);
+			if (value.getText().isEmpty())
+			{
+				diagnoses.add(DiagnosisMessage.newWarning(value.getStartLocation(), (i + 1) + "列目の項目名が空です。"));
+			}
+		}
 	}
 
 	private static boolean validateColumnCounts(CSV csv, List<DiagnosisMessage> diagnoses)
