@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import csvcradle.model.listener.CSVLexerEventListener;
 import csvcradle.validator.DiagnosisMessage;
 
 public class CSVLexer
@@ -18,6 +19,7 @@ public class CSVLexer
 	private LineDelimiter lineDelimiter;
 	private StringBuilder buf = new StringBuilder();
 	private List<DiagnosisMessage> diagnoses = new LinkedList<DiagnosisMessage>();
+	private List<CSVLexerEventListener> listeners = new LinkedList<>();
 
 	public CSVLexer(CharSequence cs)
 	{
@@ -96,6 +98,7 @@ public class CSVLexer
 		{
 			if (peek() == '"')
 			{
+				dispatchUnescapedDoubleQuotationEvent(currentLocation());
 				diagnoses.add(DiagnosisMessage.newError(currentLocation(), "エスケープされていない二重引用符があります。"));
 			}
 			buf.append(peek());
@@ -136,6 +139,7 @@ public class CSVLexer
 		}
 		if (!closed)
 		{
+			dispatchUnclosedDoubleQuotationEvent(startLocation);
 			diagnoses.add(DiagnosisMessage.newError(startLocation, "二重引用符が閉じられていません。"));
 		}
 		return buf.toString();
@@ -147,10 +151,12 @@ public class CSVLexer
 		{
 			if (this.lineDelimiter == null)
 			{
+				dispatchLindelimiterDeterminedEvent(lineDelimiter);
 				diagnoses.add(DiagnosisMessage.newInfo(Location.of(1, 1), "改行コード " + lineDelimiter));
 			}
 			else
 			{
+				dispatchLindelimiterChangedEvent(this.lineDelimiter, lineDelimiter);
 				diagnoses.add(DiagnosisMessage.newWarning(currentLocation(), "改行コード" + this.lineDelimiter + "と" + lineDelimiter + "が混在して用いられています。"));
 			}
 			this.lineDelimiter = lineDelimiter;
@@ -203,5 +209,47 @@ public class CSVLexer
 	private boolean end()
 	{
 		return p >= cs.length();
+	}
+
+	public void addListener(CSVLexerEventListener listener)
+	{
+		listeners.add(listener);
+	}
+
+	public void removeListener(CSVLexerEventListener listener)
+	{
+		listeners.remove(listener);
+	}
+
+	private void dispatchLindelimiterDeterminedEvent(LineDelimiter lineDelimiter)
+	{
+		for (CSVLexerEventListener l : listeners)
+		{
+			l.onLineDelimiterDetermined(lineDelimiter);
+		}
+	}
+
+	private void dispatchLindelimiterChangedEvent(LineDelimiter oldLineDelimiter, LineDelimiter newLineDelimiter)
+	{
+		for (CSVLexerEventListener l : listeners)
+		{
+			l.onLineDelimiterChanged(oldLineDelimiter, newLineDelimiter);
+		}
+	}
+
+	private void dispatchUnclosedDoubleQuotationEvent(Location location)
+	{
+		for (CSVLexerEventListener l : listeners)
+		{
+			l.onUnclosedDoubleQuotation(location);
+		}
+	}
+
+	private void dispatchUnescapedDoubleQuotationEvent(Location location)
+	{
+		for (CSVLexerEventListener l : listeners)
+		{
+			l.onUnescapedDoubleQuotation(location);
+		}
 	}
 }
