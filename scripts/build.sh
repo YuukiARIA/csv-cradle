@@ -13,11 +13,12 @@ fi
 mkdir ${OUTDIR}
 mkdir -p ${PRODUCTDIR}
 
-javac -d ${OUTDIR} \
-      -source 1.7 \
-      -target 1.7 \
-      -encoding UTF-8 \
-      `find ${SRCDIR} -name "*.java"`
+find ${SRCDIR} -name "*.java" | xargs javac -d ${OUTDIR} \
+                                            -classpath ${OUTDIR} \
+                                            -source 1.7 \
+                                            -target 1.7 \
+                                            -encoding UTF-8 \
+                                            -g:none
 
 echo "Manifest-Version: 1.0" > manifest.mf
 echo "Main-Class: ${MAINCLASS}" >> manifest.mf
