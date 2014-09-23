@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -x
 
 BASEDIR=`dirname $0`/..
 SRCDIR=${BASEDIR}/src
