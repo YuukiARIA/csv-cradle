@@ -156,8 +156,8 @@ public class CSVLexer
 			}
 			else
 			{
-				dispatchLineDelimiterChangedEvent(this.lineDelimiter, lineDelimiter);
 				diagnoses.add(DiagnosisMessage.newWarning(currentLocation(), "改行コード" + this.lineDelimiter + "と" + lineDelimiter + "が混在して用いられています。"));
+				dispatchLineDelimiterChangedEvent(currentLocation(), this.lineDelimiter, lineDelimiter);
 			}
 			this.lineDelimiter = lineDelimiter;
 		}
@@ -229,11 +229,11 @@ public class CSVLexer
 		}
 	}
 
-	private void dispatchLineDelimiterChangedEvent(LineDelimiter oldLineDelimiter, LineDelimiter newLineDelimiter)
+	private void dispatchLineDelimiterChangedEvent(Location location, LineDelimiter oldLineDelimiter, LineDelimiter newLineDelimiter)
 	{
 		for (CSVLexerEventListener l : listeners)
 		{
-			l.onLineDelimiterChanged(oldLineDelimiter, newLineDelimiter);
+			l.onLineDelimiterChanged(location, oldLineDelimiter, newLineDelimiter);
 		}
 	}
 

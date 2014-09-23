@@ -11,7 +11,7 @@ public abstract class CSVLexerEventAdapter implements CSVLexerEventListener
 	}
 
 	@Override
-	public void onLineDelimiterChanged(LineDelimiter oldLineDelimiter, LineDelimiter newLineDelimiter)
+	public void onLineDelimiterChanged(Location location, LineDelimiter oldLineDelimiter, LineDelimiter newLineDelimiter)
 	{
 	}
 
