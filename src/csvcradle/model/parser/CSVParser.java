@@ -7,6 +7,7 @@ import java.util.List;
 import csvcradle.model.CSV;
 import csvcradle.model.Row;
 import csvcradle.model.Value;
+import csvcradle.model.listener.CSVParserEventListener;
 import csvcradle.validator.DiagnosisMessage;
 
 public class CSVParser
@@ -14,6 +15,7 @@ public class CSVParser
 	private CSVLexer lexer;
 	private Token token;
 	private List<DiagnosisMessage> diagnoses = new LinkedList<>();
+	private List<CSVParserEventListener> listeners = new LinkedList<>();
 
 	public CSVParser(CSVLexer lexer)
 	{
@@ -48,6 +50,7 @@ public class CSVParser
 		if (!isEnd())
 		{
 			diagnoses.add(DiagnosisMessage.newError(token.startLocation, "予期しない入力: " + token.text));
+			dispatchUnexpectedTokenEvent(token);
 		}
 
 		return new CSV(rows);
@@ -89,6 +92,7 @@ public class CSVParser
 		while (isNewLine())
 		{
 			diagnoses.add(DiagnosisMessage.newWarning(token.startLocation, "空行が無視されました。"));
+			dispatchEmptyLineEvent(token.startLocation);
 			next();
 		}
 		return new Row(values);
@@ -122,5 +126,31 @@ public class CSVParser
 	public static CSVParser create(CharSequence sourceText)
 	{
 		return new CSVParser(new CSVLexer(sourceText));
+	}
+
+	public void addListener(CSVParserEventListener listener)
+	{
+		listeners.add(listener);
+	}
+
+	public void removeListener(CSVParserEventListener listener)
+	{
+		listeners.remove(listener);
+	}
+
+	private void dispatchUnexpectedTokenEvent(Token token)
+	{
+		for (CSVParserEventListener l : listeners)
+		{
+			l.onUnexpectedToken(token);
+		}
+	}
+
+	private void dispatchEmptyLineEvent(Location location)
+	{
+		for (CSVParserEventListener l : listeners)
+		{
+			l.onEmptyLine(location);
+		}
 	}
 }
