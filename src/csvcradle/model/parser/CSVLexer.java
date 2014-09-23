@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import csvcradle.model.listener.CSVLexerEventListener;
-import csvcradle.validator.DiagnosisMessage;
 
 public class CSVLexer
 {
@@ -18,7 +17,6 @@ public class CSVLexer
 	private Location startLocation;
 	private LineDelimiter lineDelimiter;
 	private StringBuilder buf = new StringBuilder();
-	private List<DiagnosisMessage> diagnoses = new LinkedList<DiagnosisMessage>();
 	private List<CSVLexerEventListener> listeners = new LinkedList<>();
 
 	public CSVLexer(CharSequence cs)
@@ -40,11 +38,6 @@ public class CSVLexer
 	public List<String> getLines()
 	{
 		return Collections.unmodifiableList(lines);
-	}
-
-	public List<DiagnosisMessage> getDiagnoses()
-	{
-		return Collections.unmodifiableList(diagnoses);
 	}
 
 	public Token lex()
@@ -99,7 +92,6 @@ public class CSVLexer
 			if (peek() == '"')
 			{
 				dispatchUnescapedDoubleQuotationEvent(currentLocation());
-				diagnoses.add(DiagnosisMessage.newError(currentLocation(), "エスケープされていない二重引用符があります。"));
 			}
 			buf.append(peek());
 			succ();
@@ -140,7 +132,6 @@ public class CSVLexer
 		if (!closed)
 		{
 			dispatchUnclosedDoubleQuotationEvent(startLocation);
-			diagnoses.add(DiagnosisMessage.newError(startLocation, "二重引用符が閉じられていません。"));
 		}
 		return buf.toString();
 	}
@@ -152,11 +143,9 @@ public class CSVLexer
 			if (this.lineDelimiter == null)
 			{
 				dispatchLindelimiterDeterminedEvent(lineDelimiter);
-				diagnoses.add(DiagnosisMessage.newInfo(Location.of(1, 1), "改行コード " + lineDelimiter));
 			}
 			else
 			{
-				diagnoses.add(DiagnosisMessage.newWarning(currentLocation(), "改行コード" + this.lineDelimiter + "と" + lineDelimiter + "が混在して用いられています。"));
 				dispatchLineDelimiterChangedEvent(currentLocation(), this.lineDelimiter, lineDelimiter);
 			}
 			this.lineDelimiter = lineDelimiter;

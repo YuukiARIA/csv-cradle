@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import csvcradle.model.CSV;
@@ -46,7 +47,7 @@ public class Main
 			CSVParser parser = CSVParser.create(text);
 			CSV csv = parser.parse();
 			List<String> lines = parser.getLines();
-			List<DiagnosisMessage> diagnoses = parser.getDiagnoses();
+			List<DiagnosisMessage> diagnoses = new LinkedList<>();
 			diagnoses.addAll(csv.getDiagnoses());
 			diagnoses.addAll(CSVValidator.validate(csv));
 			Collections.sort(diagnoses, DiagnosisMessage.getComparator());

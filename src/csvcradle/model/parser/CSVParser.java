@@ -8,26 +8,16 @@ import csvcradle.model.CSV;
 import csvcradle.model.Row;
 import csvcradle.model.Value;
 import csvcradle.model.listener.CSVParserEventListener;
-import csvcradle.validator.DiagnosisMessage;
 
 public class CSVParser
 {
 	private CSVLexer lexer;
 	private Token token;
-	private List<DiagnosisMessage> diagnoses = new LinkedList<>();
 	private List<CSVParserEventListener> listeners = new LinkedList<>();
 
 	public CSVParser(CSVLexer lexer)
 	{
 		this.lexer = lexer;
-	}
-
-	public List<DiagnosisMessage> getDiagnoses()
-	{
-		List<DiagnosisMessage> allDiagnoses = new LinkedList<>();
-		allDiagnoses.addAll(lexer.getDiagnoses());
-		allDiagnoses.addAll(diagnoses);
-		return allDiagnoses;
 	}
 
 	public List<String> getLines()
@@ -49,7 +39,6 @@ public class CSVParser
 		}
 		if (!isEnd())
 		{
-			diagnoses.add(DiagnosisMessage.newError(token.startLocation, "予期しない入力: " + token.text));
 			dispatchUnexpectedTokenEvent(token);
 		}
 
@@ -91,7 +80,6 @@ public class CSVParser
 		}
 		while (isNewLine())
 		{
-			diagnoses.add(DiagnosisMessage.newWarning(token.startLocation, "空行が無視されました。"));
 			dispatchEmptyLineEvent(token.startLocation);
 			next();
 		}
