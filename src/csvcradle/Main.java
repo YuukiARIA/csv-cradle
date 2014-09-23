@@ -13,12 +13,12 @@ import java.util.List;
 import csvcradle.model.CSV;
 import csvcradle.model.parser.CSVParser;
 import csvcradle.model.parser.Location;
+import csvcradle.util.UTF8Util;
 import csvcradle.validator.CSVValidator;
 import csvcradle.validator.DiagnosisMessage;
 
 public class Main
 {
-	private static final int UTF8_BOM = 0xFEFF;
 	private static final Charset charset = Charset.forName("UTF-8");
 
 	public static void main(String[] args)
@@ -34,7 +34,7 @@ public class Main
 		System.out.println("ファイル: " + fileName);
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), charset)))
 		{
-			skipUtf8Bom(reader);
+			UTF8Util.skipUTF8Bom(reader);
 
 			StringBuilder text = new StringBuilder();
 			char[] buf = new char[4096];
@@ -67,16 +67,5 @@ public class Main
 			e.printStackTrace();
 		}
 		System.out.println("--------");
-	}
-
-	private static boolean skipUtf8Bom(BufferedReader reader) throws IOException
-	{
-		reader.mark(3);
-		if (reader.read() != UTF8_BOM)
-		{
-			reader.reset();
-			return false;
-		}
-		return true;
 	}
 }
