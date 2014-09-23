@@ -1,5 +1,8 @@
 package csvcradle.model;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -71,5 +74,19 @@ public class CSV
 		CSV csv = parser.parse();
 		csv.parserDiagnoses = parser.getDiagnoses();
 		return csv;
+	}
+
+	public static CSV read(String fileName) throws IOException
+	{
+		try (BufferedReader reader = new BufferedReader(new FileReader(fileName)))
+		{
+			StringBuilder buf = new StringBuilder();
+			String line;
+			while ((line = reader.readLine()) != null)
+			{
+				buf.append(line).append('\n');
+			}
+			return parse(buf);
+		}
 	}
 }
