@@ -156,7 +156,7 @@ public class CSVLexer
 			}
 			else
 			{
-				dispatchLindelimiterChangedEvent(this.lineDelimiter, lineDelimiter);
+				dispatchLineDelimiterChangedEvent(this.lineDelimiter, lineDelimiter);
 				diagnoses.add(DiagnosisMessage.newWarning(currentLocation(), "改行コード" + this.lineDelimiter + "と" + lineDelimiter + "が混在して用いられています。"));
 			}
 			this.lineDelimiter = lineDelimiter;
@@ -229,7 +229,7 @@ public class CSVLexer
 		}
 	}
 
-	private void dispatchLindelimiterChangedEvent(LineDelimiter oldLineDelimiter, LineDelimiter newLineDelimiter)
+	private void dispatchLineDelimiterChangedEvent(LineDelimiter oldLineDelimiter, LineDelimiter newLineDelimiter)
 	{
 		for (CSVLexerEventListener l : listeners)
 		{
